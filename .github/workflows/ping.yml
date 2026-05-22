@@ -10,22 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping all Supabase projects
+        env:
+          PROJECTS_JSON: ${{ secrets.PROJECTS_JSON }}
         run: |
           failed=0
           while read project; do
-            name=$(echo $project | jq -r '.name')
-            url=$(echo $project | jq -r '.url')
-            key=$(echo $project | jq -r '.anon_key')
+            name=$(echo "$project" | jq -r '.name')
+            url=$(echo "$project" | jq -r '.url')
+            key=$(echo "$project" | jq -r '.anon_key')
 
             status=$(curl -s -o /dev/null -w "%{http_code}" -I \
               -H "apikey: $key" \
               "$url/rest/v1/")
 
-            if [[ "$status" == 2* ]]; then
+            if [[ "$status" =~ ^2 ]]; then
               echo "✅ $name → HTTP $status"
             else
               echo "::error::❌ $name FALHOU → HTTP $status (pode estar pausado — reative manualmente)"
               failed=$((failed + 1))
             fi
-          done < <(echo '${{ secrets.PROJECTS_JSON }}' | jq -c '.[]')
-          exit $failed
+          done < <(echo "$PROJECTS_JSON" | jq -c '.[]')
+          exit $((failed > 0 ? 1 : 0))
