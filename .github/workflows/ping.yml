@@ -20,8 +20,7 @@ jobs:
 
             status=$(curl -s -o /dev/null -w "%{http_code}" \
               -H "apikey: $key" \
-              -H "Authorization: Bearer $key" \
-              "$url/rest/v1/")
+              "$url/auth/v1/health")
 
             if [[ "$status" =~ ^2 ]]; then
               echo "✅ $name → HTTP $status"
