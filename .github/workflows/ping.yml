@@ -10,14 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping all Supabase projects
-        env:
-          PROJECTS_JSON: ${{ secrets.PROJECTS_JSON }}
         run: |
           failed=0
-          while read project; do
-            name=$(echo "$project" | jq -r '.name')
-            url=$(echo "$project" | jq -r '.url')
-            key=$(echo "$project" | jq -r '.anon_key')
+
+          ping_project() {
+            local name="$1"
+            local url="$2"
+            local key="$3"
 
             status=$(curl -s -o /dev/null -w "%{http_code}" \
               -H "apikey: $key" \
@@ -30,5 +29,15 @@ jobs:
               echo "::error::❌ $name FALHOU → HTTP $status (pode estar pausado — reative manualmente)"
               failed=$((failed + 1))
             fi
-          done < <(jq -c '.[]' <<< "$PROJECTS_JSON")
+          }
+
+          ping_project "bookhub-demo"    "https://tytqqkhodsnwmvgkrxnx.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5dHFxa2hvZHNud212Z2tyeG54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxOTE3NTAsImV4cCI6MjA5NDc2Nzc1MH0.NrupCktu-SqTa-6SJaAKCN0dY3OBxnO6ptuLjGjwNmM"
+          ping_project "courthub-demo"   "https://ciwtvjiivsgfhvlfmdxs.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpd3R2amlpdnNnZmh2bGZtZHhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNDI1NDgsImV4cCI6MjA5NDgxODU0OH0.Dk39xiCIoJhK6W-amwIT5qxWr81yG6iErWQ0Oi1U4Cg"
+          ping_project "concretar-demo"  "https://sqnejjyrfefesnlzhvmg.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxbmVqanlyZmVmZXNubHpodm1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNjc0NzUsImV4cCI6MjA5NDc0MzQ3NX0.-gsMkorIH4xr4asrarWWVUAZh47DMyFcKdcnAriPHBI"
+          ping_project "dochub-demo"     "https://sfulytakqquvqybyhiqa.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmdWx5dGFrcXF1dnF5YnloaXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNzY4MzYsImV4cCI6MjA5NDc1MjgzNn0.xbhdyKlzzfgPOVfU1R8CLnFppHBo8WmnMj2Isi4ToHw"
+          ping_project "malafaia-agenda" "https://mvvstgdtrinhbnsomcsx.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12dnN0Z2R0cmluaGJuc29tY3N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTY5OTcsImV4cCI6MjA5MzEzMjk5N30._t2IkeaOSSzL5WYc0wWs8lRXmHTbRyHzlvYnjWLe51E"
+          ping_project "bookhub-neilor"  "https://exubuggfjnvrbbnbrkvm.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dWJ1Z2dmam52cmJibmJya3ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODE3NzYsImV4cCI6MjA5Mzc1Nzc3Nn0.4i8EZwxT0iMIqJkgwqPwDoLD1lFZR2o7d-YpuQ3E5cc"
+          ping_project "concretar-crm"   "https://qnzyngkrqdvfgzrwjbyi.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFuenluZ2tycWR2Zmd6cndqYnlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTYwNzIsImV4cCI6MjA5MjI5MjA3Mn0.3a6kNAsNTvx_NK88NmzBhdB4_qea7roLRrF9hkxbmXk"
+          ping_project "courthub-eloi"   "https://gyeywmukjtthuwpnntxv.supabase.co" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5ZXl3bXVranR0aHV3cG5udHh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNTQ4MTksImV4cCI6MjA5NDczMDgxOX0.JIuN2sOIkdmj-pOyDq8cStwgYCrpSV5to0HHcfvCrxM"
+
           exit $((failed > 0 ? 1 : 0))
