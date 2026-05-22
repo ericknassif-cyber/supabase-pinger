@@ -19,8 +19,9 @@ jobs:
             url=$(echo "$project" | jq -r '.url')
             key=$(echo "$project" | jq -r '.anon_key')
 
-            status=$(curl -s -o /dev/null -w "%{http_code}" -I \
+            status=$(curl -s -o /dev/null -w "%{http_code}" \
               -H "apikey: $key" \
+              -H "Authorization: Bearer $key" \
               "$url/rest/v1/")
 
             if [[ "$status" =~ ^2 ]]; then
