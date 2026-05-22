@@ -29,5 +29,5 @@ jobs:
               echo "::error::❌ $name FALHOU → HTTP $status (pode estar pausado — reative manualmente)"
               failed=$((failed + 1))
             fi
-          done < <(echo "$PROJECTS_JSON" | jq -c '.[]')
+          done < <(jq -c '.[]' <<< "$PROJECTS_JSON")
           exit $((failed > 0 ? 1 : 0))
