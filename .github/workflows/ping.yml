@@ -1,9 +1,7 @@
 name: Ping Supabase Projects
 
 on:
-  schedule:
-    - cron: '0 9 */5 * *'
-  workflow_dispatch:
+  workflow_dispatch: # Triggered externally by cron-job.org every 5 days
 
 jobs:
   ping:
